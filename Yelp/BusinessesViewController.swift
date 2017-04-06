@@ -13,6 +13,10 @@ class BusinessesViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     
     var businesses: [Business]!
+    var filteredBusinesses: [Business]!
+    var isSearchActive = false
+    
+    private let search = UISearchBar()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,6 +37,8 @@ class BusinessesViewController: UIViewController {
                 }
             }
             
+            self.filteredBusinesses = businesses
+            
             self.tableView.reloadData()
             }
         )
@@ -48,24 +54,56 @@ class BusinessesViewController: UIViewController {
          }
          */
         
+        setupSearchBar()
     }
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+
+    private func setupSearchBar() {
+        navigationItem.titleView = search
+        search.placeholder = "Search"
+        search.sizeToFit()
+        
+        search.delegate = self
     }
 }
 
 extension BusinessesViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let numberOfRows = businesses?.count
+        let numberOfRows = filteredBusinesses?.count
         return numberOfRows ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "BusinessCell", for: indexPath) as! BusinessCell
-        cell.businesses = businesses[indexPath.row]
+        cell.businesses = filteredBusinesses[indexPath.row]
         return cell
     }
 }
+
+extension BusinessesViewController: UISearchBarDelegate {
+    func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
+        searchBar.showsCancelButton = true
+        return true
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.showsCancelButton = false
+        searchBar.text = nil
+        searchBar.resignFirstResponder()
+        isSearchActive = false
+        filteredBusinesses = businesses
+        tableView.reloadData()
+    }
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        isSearchActive = searchText != ""
+        filteredBusinesses = isSearchActive ? businesses.filter{($0.name?.localizedCaseInsensitiveContains(searchText))!} : businesses
+        tableView.reloadData()
+    }
+
+}
+

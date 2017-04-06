@@ -10,7 +10,7 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Yelp-->
+        <!--Businesses View Controller-->
         <scene sceneID="5L9-Uz-lNK">
             <objects>
                 <viewController id="2xI-yr-O5N" customClass="BusinessesViewController" customModule="Yelp" customModuleProvider="target" sceneMemberID="viewController">
@@ -132,7 +132,7 @@
                             <constraint firstItem="JVg-z5-hrU" firstAttribute="leading" secondItem="XhR-oz-92f" secondAttribute="leading" id="uLU-uK-yAg"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="Yelp" id="esA-7o-Iju"/>
+                    <navigationItem key="navigationItem" id="esA-7o-Iju"/>
                     <connections>
                         <outlet property="tableView" destination="JVg-z5-hrU" id="PPX-Vs-HDs"/>
                     </connections>
