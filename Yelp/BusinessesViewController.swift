@@ -12,9 +12,11 @@ class BusinessesViewController: UIViewController {
     
     @IBOutlet weak var tableView: UITableView!
     
-    var businesses: [Business]!
-    var filteredBusinesses: [Business]!
+    var businesses: [Business] = []
+    var filteredBusinesses: [Business]?
     var isSearchActive = false
+    var isMoreDataLoading = false
+    var loadingMoreView: InfiniteScrollActivityView?
     
     private let search = UISearchBar()
     
@@ -26,35 +28,11 @@ class BusinessesViewController: UIViewController {
         
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 150
-        
-        Business.searchWithTerm(term: "Thai", completion: { (businesses: [Business]?, error: Error?) -> Void in
-            
-            self.businesses = businesses
-            if let businesses = businesses {
-                for business in businesses {
-                    print(business.name!)
-                    print(business.address!)
-                }
-            }
-            
-            self.filteredBusinesses = businesses
-            
-            self.tableView.reloadData()
-            }
-        )
-        
-        /* Example of Yelp search with more search options specified
-         Business.searchWithTerm("Restaurants", sort: .Distance, categories: ["asianfusion", "burgers"], deals: true) { (businesses: [Business]!, error: NSError!) -> Void in
-         self.businesses = businesses
-         
-         for business in businesses {
-         print(business.name!)
-         print(business.address!)
-         }
-         }
-         */
-        
+                
         setupSearchBar()
+        setupLoadingIndicator()
+
+        loadData()
     }
 
     private func setupSearchBar() {
@@ -63,6 +41,47 @@ class BusinessesViewController: UIViewController {
         search.sizeToFit()
         
         search.delegate = self
+    }
+    
+    private func setupLoadingIndicator() {
+        let frame = getIndicatorFrame()
+        
+        loadingMoreView = InfiniteScrollActivityView(frame: frame)
+        loadingMoreView?.isHidden = true
+        tableView.addSubview(loadingMoreView!)
+        
+        var insets = tableView.contentInset
+        insets.bottom += InfiniteScrollActivityView.defaultHeight
+        tableView.contentInset = insets
+    }
+    
+    func loadData() {
+        Business.searchWithTerm(term: "Restaurants", limit: 20, offset: self.businesses.count as NSNumber?, sort: nil, categories: nil, deals: nil) { (businesses: [Business]?, error: Error?) -> Void in
+            self.businesses = self.businesses + businesses!
+            if let businesses = businesses {
+                for business in businesses {
+                    print(business.name!)
+                    print(business.address!)
+                }
+            }
+            
+            // Update loading flag
+            self.isMoreDataLoading = false
+            
+            // Stop the Loading indicator
+            self.loadingMoreView?.stopAnimating()
+            
+            // Use new data to update the datasource
+            self.filteredBusinesses = self.businesses
+            
+            self.tableView.reloadData()
+        }
+    }
+    
+    func getIndicatorFrame() -> CGRect {
+        let indicatorOrigin = CGPoint(x: 0, y: tableView.contentSize.height)
+        let indicatorSize = CGSize(width: tableView.contentSize.width, height: InfiniteScrollActivityView.defaultHeight)
+        return CGRect(origin: indicatorOrigin, size: indicatorSize)
     }
 }
 
@@ -75,12 +94,13 @@ extension BusinessesViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "BusinessCell", for: indexPath) as! BusinessCell
-        cell.businesses = filteredBusinesses[indexPath.row]
+        cell.businesses = filteredBusinesses?[indexPath.row]
         return cell
     }
 }
 
 extension BusinessesViewController: UISearchBarDelegate {
+    
     func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
         searchBar.showsCancelButton = true
         return true
@@ -107,3 +127,26 @@ extension BusinessesViewController: UISearchBarDelegate {
 
 }
 
+extension BusinessesViewController: UIScrollViewDelegate {
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if !isMoreDataLoading {
+            
+            // Calculate the position of one screen lenght before the bottom of the results
+            let scrollViewContentHeight = tableView.contentSize.height
+            let scrollOffsetThreshold = scrollViewContentHeight - tableView.bounds.size.height
+            
+            // When the user scrolled and excided the threshold, request new data
+            if scrollView.contentOffset.y > scrollOffsetThreshold && tableView.isDragging {
+                isMoreDataLoading = true
+
+                // Update position of LoadingMoreView, and start loading indicator
+                loadingMoreView?.frame = getIndicatorFrame()
+                loadingMoreView?.startAnimating()
+                
+                // Load more data ...
+                loadData()
+            }
+        }
+    }
+}
