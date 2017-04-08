@@ -13,10 +13,11 @@ class BusinessesViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     
     var businesses: [Business] = []
-    var filteredBusinesses: [Business]?
+    var filteredBusinesses: [Business] = []
     var isSearchActive = false
     var isMoreDataLoading = false
     var loadingMoreView: InfiniteScrollActivityView?
+    var activeCategoryFilters: [String]?
     
     private let search = UISearchBar()
     
@@ -56,25 +57,25 @@ class BusinessesViewController: UIViewController {
     }
     
     func loadData() {
-        Business.searchWithTerm(term: "Restaurants", limit: 20, offset: self.businesses.count as NSNumber?, sort: nil, categories: nil, deals: nil) { (businesses: [Business]?, error: Error?) -> Void in
-            self.businesses = self.businesses + businesses!
+        Business.searchWithTerm(term: "Restaurants", limit: 20, offset: self.businesses.count as NSNumber?, sort: nil, categories: activeCategoryFilters, deals: nil) { (businesses: [Business]?, error: Error?) -> Void in
             if let businesses = businesses {
+                self.businesses = self.businesses + businesses
                 for business in businesses {
                     print(business.name!)
                     print(business.address!)
                 }
+            
+                // Update loading flag
+                self.isMoreDataLoading = false
+            
+                // Stop the Loading indicator
+                self.loadingMoreView?.stopAnimating()
+                
+                // Use new data to update the datasource
+                self.filteredBusinesses = self.businesses
+            
+                self.tableView.reloadData()
             }
-            
-            // Update loading flag
-            self.isMoreDataLoading = false
-            
-            // Stop the Loading indicator
-            self.loadingMoreView?.stopAnimating()
-            
-            // Use new data to update the datasource
-            self.filteredBusinesses = self.businesses
-            
-            self.tableView.reloadData()
         }
     }
     
@@ -83,18 +84,24 @@ class BusinessesViewController: UIViewController {
         let indicatorSize = CGSize(width: tableView.contentSize.width, height: InfiniteScrollActivityView.defaultHeight)
         return CGRect(origin: indicatorOrigin, size: indicatorSize)
     }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let navigationController = segue.destination as? UINavigationController
+        if let destinationVC = navigationController?.topViewController as? FiltersViewController {
+            destinationVC.delegate = self
+        }
+    }
 }
 
 extension BusinessesViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let numberOfRows = filteredBusinesses?.count
-        return numberOfRows ?? 0
+        return filteredBusinesses.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "BusinessCell", for: indexPath) as! BusinessCell
-        cell.businesses = filteredBusinesses?[indexPath.row]
+        let cell = tableView.dequeueReusableCell(withIdentifier: Contants.businessCellIReusedentifier, for: indexPath) as! BusinessCell
+        cell.businesses = filteredBusinesses[indexPath.row]
         return cell
     }
 }
@@ -148,5 +155,15 @@ extension BusinessesViewController: UIScrollViewDelegate {
                 loadData()
             }
         }
+    }
+}
+
+extension BusinessesViewController: FiltersViewControllerDelegate {
+    
+    func filtersViewController(filtersViewController: FiltersViewController, didUpdateFilters filters: [String : AnyObject]) {
+        activeCategoryFilters = filters["categories"] as? [String]
+        businesses = []
+        filteredBusinesses = businesses
+        loadData()
     }
 }
