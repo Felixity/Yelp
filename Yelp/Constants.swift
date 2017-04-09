@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct Contants {
+struct Constants {
     
     static let businessCellIReusedentifier = "BusinessCell"
     

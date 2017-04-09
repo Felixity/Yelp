@@ -24,7 +24,7 @@ class FilterCell: UITableViewCell {
         delegate?.filterCell(filterCell: self, didChangeValue: onSwitch.isOn)
     }
     
-    var category: [String: String]? {
+    var filter: Filter? {
         didSet {
             updateUI()
         }
@@ -36,8 +36,12 @@ class FilterCell: UITableViewCell {
         onSwitch.isOn = false
         
         // set the new category data
-        if let category = category {
-            switchLabel.text = category["name"]
+        if let filter = filter {
+            switchLabel.text = filter.categoryName
+            
+            if let switchState = filter.categorySwitchState {
+                onSwitch.isOn = switchState
+            }
         }
     }
 }

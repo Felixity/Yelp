@@ -17,14 +17,17 @@ class FiltersViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     
     var categories: [[String: String]]!
-    var switchStates = [Int: Bool]()
+    var switchStates: [Bool]!
+    var filters: [Filter] = []
     
     var delegate: FiltersViewControllerDelegate?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        categories = Contants.yelpCategories
+        categories = Constants.yelpCategories
+        switchStates = Array(repeating: false, count: categories.count)
+        filters = Filter.filters(categories: Constants.yelpCategories, switchStates: switchStates)
         
         tableView.dataSource = self
         tableView.delegate = self
@@ -44,32 +47,35 @@ class FiltersViewController: UIViewController {
     }
     
     private func updateSelectedCategories() -> [String: AnyObject] {
-        var filters = [String: AnyObject]()
-        var selectedCategories = [String]()
+        var activeFilters: [String: AnyObject] = [:]
+        var selectedCategories: [String] = []
         
-        for (row, isSwitchSelected) in switchStates {
-            if isSwitchSelected {
-                selectedCategories.append(categories[row]["code"]!)
+        for (index, filter) in filters.enumerated() {
+            if let switchState = filter.categorySwitchState
+            {
+                if switchState {
+                    selectedCategories.append(Constants.yelpCategories[index]["code"]!)
+                }
             }
         }
+        
         if selectedCategories.count > 0 {
-            filters["categories"] = selectedCategories as AnyObject?
+            activeFilters["categories"] = selectedCategories as AnyObject?
         }
         
-        return filters
+        return activeFilters
     }
 }
 
 extension FiltersViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return categories.count
+        return filters.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: Contants.filterCellReuseIdentifier, for: indexPath) as! FilterCell
-        cell.category = categories[indexPath.row]
-        cell.onSwitch.isOn = switchStates[indexPath.row] ?? false
+        let cell = tableView.dequeueReusableCell(withIdentifier: Constants.filterCellReuseIdentifier, for: indexPath) as! FilterCell
+        cell.filter = filters[indexPath.row]
         
         cell.delegate = self
         return cell
@@ -80,6 +86,6 @@ extension FiltersViewController: FilterCellDelegate {
     
     func filterCell(filterCell: FilterCell, didChangeValue value: Bool) {
         let index = tableView.indexPath(for: filterCell)?.row
-        switchStates[index!] = value
+        filters[index!].categorySwitchState = value
     }
 }

@@ -100,7 +100,7 @@ extension BusinessesViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: Contants.businessCellIReusedentifier, for: indexPath) as! BusinessCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: Constants.businessCellIReusedentifier, for: indexPath) as! BusinessCell
         cell.businesses = filteredBusinesses[indexPath.row]
         return cell
     }
@@ -162,7 +162,7 @@ extension BusinessesViewController: FiltersViewControllerDelegate {
     
     func filtersViewController(filtersViewController: FiltersViewController, didUpdateFilters filters: [String : AnyObject]) {
         activeCategoryFilters = filters["categories"] as? [String]
-        businesses = []
+        businesses.removeAll()
         filteredBusinesses = businesses
         loadData()
     }
