@@ -17,6 +17,8 @@ class FiltersViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     
     var filters: [[Filter]] = []
+    var originalFilters: [[Filter]] = []
+    var filtersState = [false, false, false, false]
     
     var delegate: FiltersViewControllerDelegate?
     
@@ -24,7 +26,10 @@ class FiltersViewController: UIViewController {
         super.viewDidLoad()
         
         // Setup the model
-        filters = Filter.filters(items: Constants.yelpFilters)
+        originalFilters = Filter.filters(items: Constants.yelpFilters)
+        originalFilters[1][0].itemState = true
+        originalFilters[2][0].itemState = true
+        filters = getReducedFilters()
         
         tableView.dataSource = self
         tableView.delegate = self
@@ -63,6 +68,26 @@ class FiltersViewController: UIViewController {
         print("activeFilters: \(activeFilters)")
         return activeFilters
     }
+    
+    func getReducedFilters() -> [[Filter]] {
+        var newFilters:[[Filter]] = []
+        
+        // deals
+        newFilters.append(originalFilters[0])
+
+        // distance
+        newFilters.append(filtersState[1] ? originalFilters[1] : originalFilters[1].filter{$0.itemState!})
+        
+        // sort by
+        newFilters.append(filtersState[2] ? originalFilters[2] : originalFilters[2].filter{$0.itemState!})
+        
+        // categories
+        newFilters.append(filtersState[3] ? originalFilters[3] : Array<Filter>(originalFilters[3].prefix(5)))
+        
+        return newFilters
+    }
+    
+    
 }
 
 extension FiltersViewController: UITableViewDataSource, UITableViewDelegate {
@@ -79,9 +104,30 @@ extension FiltersViewController: UITableViewDataSource, UITableViewDelegate {
     private func createCheckMarkCell(_ indexPath: IndexPath) -> UITableViewCell {
         let checkMarkCell = tableView.dequeueReusableCell(withIdentifier: Constants.checkMarkCellReuseIdentifier, for: indexPath)
         checkMarkCell.textLabel?.text = filters[indexPath.section][indexPath.row].itemName
+        
+        let filterItem = filters[indexPath.section][indexPath.row]
+        checkMarkCell.accessoryType = filterItem.itemState! ? .disclosureIndicator : .none
         return checkMarkCell
     }
+    
+    private func createSeeAllCell(_ indexPath: IndexPath) -> UITableViewCell {
+        let seeAllCell = tableView.dequeueReusableCell(withIdentifier: Constants.seeAllCellReuseIdentifier, for: indexPath)
+        return seeAllCell
+    }
+    
+    private func expandTable(_ indexPath: IndexPath) {
+        filtersState[indexPath.section] = true
+        filters = getReducedFilters()
+        
+        tableView.reloadData()
+    }
 
+    private func collapseTable(_ indexPath: IndexPath) {
+        filtersState[indexPath.section] = false
+        filters = getReducedFilters()
+        tableView.reloadData()
+    }
+    
     // MARK: Protocol's functions
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -94,10 +140,22 @@ extension FiltersViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell: UITableViewCell
+        var cell: UITableViewCell
         
-        if indexPath.section == 0 || indexPath.section == 3 {
+        if indexPath.section == 0 {
+            
             cell = createSwitchCell(indexPath)
+        }
+        else if indexPath.section == 3 {
+            
+            cell = createSwitchCell(indexPath)
+            
+            if indexPath.row == filters[indexPath.section].count-1 {
+                if filtersState[indexPath.section] == false {
+                    // add See All button
+                    cell = createSeeAllCell(indexPath)
+                }
+            }
         }
         else {
             // in case section == 1 && section == 2
@@ -117,38 +175,50 @@ extension FiltersViewController: UITableViewDataSource, UITableViewDelegate {
         
         print("selectedSectionItems: \(selectedRowsInCurrentSection)")
         
-        if (selectedRowsInCurrentSection?.count)! >= 1 {
-            if indexPath.section == 1 || indexPath.section == 2 {
-
-                for row in selectedRowsInCurrentSection! {
+        if filters[indexPath.section].count > 1 {
+            if (selectedRowsInCurrentSection?.count)! >= 1 {
+                if indexPath.section == 1 || indexPath.section == 2 {
                     
-                    if row != indexPath.row {
-    
-                        // The previous marked row must be unchecked and deselected, in order to allow the current one to be maked as checked
-                        filters[indexPath.section][row].itemState = false
-                        let oldIndexPath = IndexPath(row: row, section: indexPath.section)
-                        tableView.cellForRow(at: oldIndexPath)?.accessoryType = UITableViewCellAccessoryType.none
-                        tableView.deselectRow(at: oldIndexPath, animated: false)
+                    for row in 0..<filters[indexPath.section].count {
+                        
+                        if row != indexPath.row {
+                            
+                            // The previous marked row must be unchecked and deselected, in order to allow the current one to be maked as checked
+                            filters[indexPath.section][row].itemState = false
+                            let oldIndexPath = IndexPath(row: row, section: indexPath.section)
+                            tableView.cellForRow(at: oldIndexPath)?.accessoryType = .none
+                            tableView.deselectRow(at: oldIndexPath, animated: false)
+                        }
+                        else{
+                            
+                            // No row was previous marked, the current one is the first one
+                            filters[indexPath.section][row].itemState = true
+                            tableView.cellForRow(at: indexPath)?.accessoryType = .disclosureIndicator
+                        }
                     }
-                    else{
-                 
-                        // No row was previous marked, the current one is the first one
-                        filters[indexPath.section][row].itemState = true
-                        tableView.cellForRow(at: indexPath)?.accessoryType = UITableViewCellAccessoryType.checkmark
-                    }
+                    
+                    collapseTable(indexPath)
                 }
-            }
-            else {
-                
-                // for rows that are in sections with switch components restict multiple row selection
-                for row in selectedRowsInCurrentSection! {
-                    if row != indexPath.row {
-                        let newIndexPath = IndexPath(row: row, section: indexPath.section)
-                        tableView.deselectRow(at: newIndexPath, animated: false)
+                else {
+                    
+                    // for rows that are in sections with switch components restict multiple row selection
+                    for row in selectedRowsInCurrentSection! {
+                        if row != indexPath.row {
+                            let newIndexPath = IndexPath(row: row, section: indexPath.section)
+                            tableView.deselectRow(at: newIndexPath, animated: false)
+                        }
+                    }
+                    
+                    if indexPath.section == 3 && indexPath.row == filters[indexPath.section].count-1 {
+                        expandTable(indexPath)
                     }
                 }
             }
         }
+        else {
+            expandTable(indexPath)
+        }
+        
     }
     
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {

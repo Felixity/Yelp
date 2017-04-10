@@ -16,6 +16,8 @@ struct Constants {
     
     static let checkMarkCellReuseIdentifier = "CheckMarkCell"
     
+    static let seeAllCellReuseIdentifier = "SeeAllCell"
+    
     // In the following dictionaries "name" is what is displayed in the app's filter and "code" is what the API expects
     static let yelpCategories = [["name" : "American (Traditional)", "code" : "tradamerican"],
                                  ["name" : "Barbeque", "code" : "bbq"],
