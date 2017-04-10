@@ -41,6 +41,8 @@ class FiltersViewController: UIViewController {
         
         // In order to allow the checkmark of one row per section, is important to set the allowsMultipleSelection property
         tableView.allowsMultipleSelection = true
+        
+        customizeNavigationBar()        
     }
 
     @IBAction func onCancel(_ sender: UIBarButtonItem) {
@@ -51,6 +53,21 @@ class FiltersViewController: UIViewController {
         let filters = getActiveFilters()
         delegate?.filtersViewController(filtersViewController: self, didUpdateFilters: filters)
         self.dismiss(animated: true, completion: nil)
+    }
+    
+    private func customizeNavigationBar() {
+        navigationController?.navigationBar.barTintColor = .red
+        
+        if let navigationBar = navigationController?.navigationBar {
+            navigationBar.tintColor = .white
+            
+            let shadow = NSShadow()
+            shadow.shadowColor = UIColor.lightGray
+            shadow.shadowOffset = CGSize(width: 2, height: 2)
+            shadow.shadowBlurRadius = 4
+            let attributeColor = UIColor.white
+            navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: attributeColor,NSShadowAttributeName: shadow]
+        }
     }
     
     private func getActiveFilters() -> [String: [String]] {

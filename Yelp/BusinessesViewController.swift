@@ -37,6 +37,8 @@ class BusinessesViewController: UIViewController {
         setupLoadingIndicator()
 
         loadData()
+        
+        customizeNavigationBar()
     }
 
     private func setupSearchBar() {
@@ -57,6 +59,11 @@ class BusinessesViewController: UIViewController {
         var insets = tableView.contentInset
         insets.bottom += InfiniteScrollActivityView.defaultHeight
         tableView.contentInset = insets
+    }
+
+    private func customizeNavigationBar() {
+        navigationController?.navigationBar.barTintColor = .red
+        navigationController?.navigationBar.tintColor = .white
     }
     
     func loadData() {
