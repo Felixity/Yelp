@@ -10,20 +10,32 @@ import Foundation
 
 class Filter {
     
-    var categoryName: String?
-    var categorySwitchState: Bool?
+    var itemName: String?
+    var itemCode: String?
+    var itemState: Bool?
     
-    init(categories: [String: String], categorySwitchState: Bool) {
-        self.categoryName = categories["name"]
-        self.categorySwitchState = categorySwitchState
+    init(item: [String: String], itemState: Bool) {
+        self.itemName = item["name"]
+        self.itemCode = item["code"]
+        self.itemState = itemState
     }
     
-    class func filters(categories: [[String: String]], switchStates: [Bool]) -> [Filter] {
-        var filters: [Filter] = []
+    class func filters(items: [[[String: String]]]) -> [[Filter]] {
         
-        for (key, _) in switchStates.enumerated() {
-            let filter = Filter(categories: categories[key],categorySwitchState: switchStates[key])
-            filters.append(filter)
+        // This function is used create the Filter's model based on values from Constants.yelpFilters
+        
+        var filters: [[Filter]] = []
+        var sectionFilters: [Filter] = []
+        
+        for (section, sectionItems) in items.enumerated() {            
+            for (indexItem, _) in sectionItems.enumerated() {
+                let filter = Filter(item: items[section][indexItem],itemState: false)
+                sectionFilters.append(filter)
+            }
+            filters.append(sectionFilters)
+            
+            // Before setting the filters for the next sections, delete the elements of sectionFilters array
+            sectionFilters.removeAll()
         }
         
         return filters

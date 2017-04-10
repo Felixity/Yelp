@@ -10,11 +10,13 @@ import Foundation
 
 struct Constants {
     
-    static let businessCellIReusedentifier = "BusinessCell"
+    static let businessCellIReuseIdentifier = "BusinessCell"
     
-    static let filterCellReuseIdentifier = "FilterCell"
+    static let switchCellReuseIdentifier = "SwitchCell"
     
-    // In the following dictionary "name" is what is displayed in the app's filter and "code" is what the API expects
+    static let checkMarkCellReuseIdentifier = "CheckMarkCell"
+    
+    // In the following dictionaries "name" is what is displayed in the app's filter and "code" is what the API expects
     static let yelpCategories = [["name" : "American (Traditional)", "code" : "tradamerican"],
                                  ["name" : "Barbeque", "code" : "bbq"],
                                  ["name" : "Breakfast & Brunch", "code" : "breakfast_brunch"],
@@ -40,5 +42,23 @@ struct Constants {
                                  ["name" : "Tapas/Small Plates", "code" : "tapasmallplates"],
                                  ["name" : "Thai", "code" : "thai"],
                                  ["name" : "Vegetarian", "code" : "vegetarian"],
-                                 ["name" : "Vietnamese", "code" : "vietnamese"]]
+                                 ["name" : "Vietnamese", "code" : "vietnamese"],
+                                 ["name" : "Romanian", "code": "romanian"]]
+    
+    static let yelpSort = [["name" : "Best Match", "code" : "0"],
+                           ["name" : "Distance", "code" : "1"],
+                           ["name" : "Highest Rated", "code" : "2"]]
+    
+    static let yelpDistance = [["name" : "0,2 km", "code" : "200"],
+                               ["name" : "0,8 km", "code" : "800"],
+                               ["name" : "1,5 km", "code" : "1500"],
+                               ["name" : "8 km", "code" : "8000"]]
+    
+    static let yelpDeals = [["name": "Deals on/off", "code" : "true"]]
+    
+    static let yelpFilters = [yelpDeals, yelpDistance, yelpSort, yelpCategories]
+    
+    static let sectionNames = ["Deals", "Distance", "Sort By", "Categories"]
+    
+    static let filterKeys = ["deals", "distance", "sort", "categories"]
 }

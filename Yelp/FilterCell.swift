@@ -14,7 +14,6 @@ protocol FilterCellDelegate {
 
 class FilterCell: UITableViewCell {
 
-
     @IBOutlet weak var switchLabel: UILabel!
     @IBOutlet weak var onSwitch: UISwitch!
     
@@ -31,15 +30,16 @@ class FilterCell: UITableViewCell {
     }
     
     private func updateUI() {
+        
         // reset existing content
+        
         switchLabel.text = nil
         onSwitch.isOn = false
         
-        // set the new category data
         if let filter = filter {
-            switchLabel.text = filter.categoryName
+            switchLabel.text = filter.itemName
             
-            if let switchState = filter.categorySwitchState {
+            if let switchState = filter.itemState {
                 onSwitch.isOn = switchState
             }
         }

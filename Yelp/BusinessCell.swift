@@ -11,7 +11,6 @@ import AFNetworking
 
 class BusinessCell: UITableViewCell {
 
-    
     @IBOutlet weak var avatarImageView: UIImageView!
     @IBOutlet weak var restaurantNameLabel: UILabel!
     @IBOutlet weak var distanceLabel: UILabel!
@@ -28,7 +27,7 @@ class BusinessCell: UITableViewCell {
     
     private func updateUI() {
         
-        // reset existing content
+        // reset existing content to avoid flickering caused by the fact that cells are reused
         
         avatarImageView.image = nil
         restaurantNameLabel.text = nil

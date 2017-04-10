@@ -18,6 +18,9 @@ class BusinessesViewController: UIViewController {
     var isMoreDataLoading = false
     var loadingMoreView: InfiniteScrollActivityView?
     var activeCategoryFilters: [String]?
+    var activeDistanceFilters: NSNumber?
+    var activeDealsFilters: Bool?
+    var activeSortFilters: YelpSortMode?
     
     private let search = UISearchBar()
     
@@ -57,13 +60,9 @@ class BusinessesViewController: UIViewController {
     }
     
     func loadData() {
-        Business.searchWithTerm(term: "Restaurants", limit: 20, offset: self.businesses.count as NSNumber?, sort: nil, categories: activeCategoryFilters, deals: nil) { (businesses: [Business]?, error: Error?) -> Void in
+        Business.searchWithTerm(term: "Restaurants", limit: 20, offset: self.businesses.count as NSNumber?, sort: activeSortFilters, categories: activeCategoryFilters, distance: activeDistanceFilters , deals: activeDealsFilters) { (businesses: [Business]?, error: Error?) -> Void in
             if let businesses = businesses {
                 self.businesses = self.businesses + businesses
-                for business in businesses {
-                    print(business.name!)
-                    print(business.address!)
-                }
             
                 // Update loading flag
                 self.isMoreDataLoading = false
@@ -73,9 +72,10 @@ class BusinessesViewController: UIViewController {
                 
                 // Use new data to update the datasource
                 self.filteredBusinesses = self.businesses
-            
-                self.tableView.reloadData()
             }
+            
+            // The table view must me updated even if there are no results coming from the server
+            self.tableView.reloadData()
         }
     }
     
@@ -100,7 +100,7 @@ extension BusinessesViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: Constants.businessCellIReusedentifier, for: indexPath) as! BusinessCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: Constants.businessCellIReuseIdentifier, for: indexPath) as! BusinessCell
         cell.businesses = filteredBusinesses[indexPath.row]
         return cell
     }
@@ -131,7 +131,6 @@ extension BusinessesViewController: UISearchBarDelegate {
         filteredBusinesses = isSearchActive ? businesses.filter{($0.name?.localizedCaseInsensitiveContains(searchText))!} : businesses
         tableView.reloadData()
     }
-
 }
 
 extension BusinessesViewController: UIScrollViewDelegate {
@@ -160,8 +159,18 @@ extension BusinessesViewController: UIScrollViewDelegate {
 
 extension BusinessesViewController: FiltersViewControllerDelegate {
     
-    func filtersViewController(filtersViewController: FiltersViewController, didUpdateFilters filters: [String : AnyObject]) {
-        activeCategoryFilters = filters["categories"] as? [String]
+    func filtersViewController(filtersViewController: FiltersViewController, didUpdateFilters filters: [String : [String]]) {
+        
+        activeDealsFilters = filters["deals"]?[0].contains("true")
+        
+        let distance = filters["distance"]?[0]
+        activeDistanceFilters = (distance != nil) ? NSNumber(value: Int(distance!)!) : nil
+        
+        let sort = filters["sort"]?[0]
+        activeSortFilters = (sort != nil) ? YelpSortMode(rawValue: Int(sort!)!) : nil
+        
+        activeCategoryFilters = filters["categories"]
+        
         businesses.removeAll()
         filteredBusinesses = businesses
         loadData()
