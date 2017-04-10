@@ -42,10 +42,9 @@ Please list two areas of the assignment you'd like to **discuss further with you
 4. Looking at the code, what would be the parts that need to be refactor, in your oppinion?
 
 ## Video Walkthrough
-
 Here's a walkthrough of implemented user stories:
 
-<img src='http://i.imgur.com/6oV1nkr.gifv' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+[![Demo clip of app](http://i.imgur.com/6oV1nkr.gifv)](http://i.imgur.com/6oV1nkr.gifv) 
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
