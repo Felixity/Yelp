@@ -176,12 +176,13 @@
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1qD-En-4oa">
+                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" onImage="yelpThumb" offImage="yelpThumb" translatesAutoresizingMaskIntoConstraints="NO" id="1qD-En-4oa">
                                                     <rect key="frame" x="318" y="16" width="51" height="31"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="31" id="0xX-vk-1zu"/>
                                                         <constraint firstAttribute="width" constant="49" id="MNx-kn-lSJ"/>
                                                     </constraints>
+                                                    <color key="onTintColor" red="0.867330661" green="0.13707403339999999" blue="0.1692646394" alpha="1" colorSpace="calibratedRGB"/>
                                                     <connections>
                                                         <action selector="switchValueChanged:" destination="Xmb-6E-fIu" eventType="valueChanged" id="E8f-Kp-nFK"/>
                                                     </connections>
@@ -212,15 +213,15 @@
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="SeeAllCell" id="ObY-Vc-9z3">
                                         <rect key="frame" x="0.0" y="149" width="375" height="61"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" tableViewCell="ObY-Vc-9z3" id="az7-w5-iq5">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="60"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="ObY-Vc-9z3" id="az7-w5-iq5">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="60.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="See All" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Rkv-ds-jDk">
-                                                    <rect key="frame" x="161" y="20" width="53" height="21"/>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="See All" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Rkv-ds-jDk">
+                                                    <rect key="frame" x="161" y="8" width="53" height="21"/>
                                                     <constraints>
-                                                        <constraint firstAttribute="width" constant="53" id="KaS-9M-dlz"/>
-                                                        <constraint firstAttribute="height" constant="21" id="M3o-8F-aqQ"/>
+                                                        <constraint firstAttribute="height" constant="21" id="Vty-zP-ZiJ"/>
+                                                        <constraint firstAttribute="width" constant="53" id="Xde-LA-LUA"/>
                                                     </constraints>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
@@ -228,10 +229,9 @@
                                                 </label>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstAttribute="bottom" secondItem="Rkv-ds-jDk" secondAttribute="bottom" constant="8" id="Nzg-hQ-MNh"/>
-                                                <constraint firstItem="Rkv-ds-jDk" firstAttribute="top" secondItem="az7-w5-iq5" secondAttribute="top" constant="8" id="P2X-co-UXq"/>
-                                                <constraint firstItem="Rkv-ds-jDk" firstAttribute="centerX" secondItem="az7-w5-iq5" secondAttribute="centerX" id="RvA-Yv-Z2o"/>
-                                                <constraint firstItem="Rkv-ds-jDk" firstAttribute="centerY" secondItem="az7-w5-iq5" secondAttribute="centerY" id="iVk-LZ-4oA"/>
+                                                <constraint firstItem="Rkv-ds-jDk" firstAttribute="top" secondItem="az7-w5-iq5" secondAttribute="top" constant="8" id="Pe4-ka-cYr"/>
+                                                <constraint firstItem="Rkv-ds-jDk" firstAttribute="centerX" secondItem="az7-w5-iq5" secondAttribute="centerX" id="X0L-eu-w4u"/>
+                                                <constraint firstAttribute="bottom" secondItem="Rkv-ds-jDk" secondAttribute="bottom" constant="8" id="XpI-a1-ZSl"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
@@ -303,4 +303,7 @@
             <point key="canvasLocation" x="3343" y="358"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="yelpThumb" width="12" height="12"/>
+    </resources>
 </document>
