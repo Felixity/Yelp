@@ -44,7 +44,7 @@ Please list two areas of the assignment you'd like to **discuss further with you
 ## Video Walkthrough
 Here's a walkthrough of implemented user stories:
 
-[![Demo clip of app](http://i.imgur.com/6oV1nkr.gifv)](http://i.imgur.com/6oV1nkr.gifv) 
+[![Demo clip of app](http://i.imgur.com/6oV1nkr.gif)](http://i.imgur.com/6oV1nkr.gif) 
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
